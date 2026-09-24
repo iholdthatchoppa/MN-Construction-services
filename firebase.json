@@ -1,0 +1,19 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "auth": {
+    "authorizedDomains": [
+      "localhost",
+      "mnconstructionservicesllc.com",
+      "www.mnconstructionservicesllc.com"
+    ],
+    "providers": {
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "MN Construction Services",
+        "supportEmail": "abtin.norizadeh@gmail.com"
+      }
+    }
+  }
+}

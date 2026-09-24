@@ -1,42 +1,182 @@
+/* ============================================================
+   DESIGN TOKENS
+============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --cream:       #f5f2ed;
+  --warm-white:  #faf8f5;
+  --charcoal:    #1c1c1a;
+  --olive:       #5a6347;
+  --olive-light: #7a8560;
+  --olive-pale:  #e8ece0;
+  --stone:       #a09880;
+  --stone-light: #d4cfc6;
+  --accent:      #b8860b;
+
+  --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-sans:  var(--font-dm-sans), system-ui, sans-serif;
+
+  --nav-gap:     14px;
+  --nav-pill-h:  64px;
+  --nav-h:       calc(var(--nav-gap) + var(--nav-pill-h) + 14px); /* space reserved under the floating header */
+  --pad-section: 108px;
+  --max-w:       1280px;
+  --radius:      6px;
+  --radius-lg:   12px;
+  --ease:        cubic-bezier(0.4, 0, 0.2, 1);
+  --trans:       all 0.3s var(--ease);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ============================================================
+   RESET + BASE
+============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html,
+html { scroll-behavior: smooth; scroll-padding-top: var(--nav-h); font-size: 16px; overflow-x: hidden; }
+
 body {
-  max-width: 100vw;
+  font-family: var(--font-sans);
+  background: var(--warm-white);
+  color: var(--charcoal);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+img    { max-width: 100%; display: block; }
+a      { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+
+/* ============================================================
+   LAYOUT UTILITIES
+============================================================ */
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 48px;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--olive);
+}
+.eyebrow::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: currentColor;
+  flex-shrink: 0;
 }
 
-a {
-  color: inherit;
+.sectionTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+}
+
+/* ============================================================
+   BUTTONS
+============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: var(--trans);
+  white-space: nowrap;
   text-decoration: none;
 }
+.btnPrimary {
+  background: var(--olive);
+  color: #fff;
+}
+.btnPrimary:hover {
+  background: var(--olive-light);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(90,99,71,0.28);
+}
+.btnOutline {
+  background: transparent;
+  color: var(--olive);
+  border: 1.5px solid var(--olive);
+}
+.btnOutline:hover {
+  background: var(--olive);
+  color: #fff;
+  transform: translateY(-2px);
+}
+.btnWhite {
+  background: #fff;
+  color: var(--olive);
+}
+.btnWhite:hover {
+  background: var(--cream);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+}
+.btnGhost {
+  background: transparent;
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.45);
+}
+.btnGhost:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.8);
+  transform: translateY(-2px);
+}
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+/* ============================================================
+   ANIMATIONS — HERO (immediate, CSS-only)
+============================================================ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.93); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+
+/* ============================================================
+   SCROLL REVEALS (driven by RevealWrapper)
+============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.72s var(--ease), transform 0.72s var(--ease);
+}
+.reveal.visible          { opacity: 1; transform: translateY(0); }
+.reveal.d1               { transition-delay: 0.10s; }
+.reveal.d2               { transition-delay: 0.20s; }
+.reveal.d3               { transition-delay: 0.30s; }
+.reveal.d4               { transition-delay: 0.40s; }
+
+/* ============================================================
+   RESPONSIVE (shared)
+============================================================ */
+@media (max-width: 1024px) {
+  :root { --pad-section: 76px; }
+  .container { padding: 0 28px; }
+}
+@media (max-width: 640px) {
+  :root { --pad-section: 60px; }
+  .container { padding: 0 18px; }
 }

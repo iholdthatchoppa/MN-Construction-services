@@ -1,0 +1,239 @@
+/* ============================================================
+   ADMIN — reuses the site's design tokens from globals.css
+============================================================ */
+.center {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background: var(--cream);
+}
+
+.signInCard {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+  padding: 44px 32px;
+  background: var(--warm-white);
+  border: 1px solid var(--stone-light);
+  border-radius: var(--radius-lg);
+}
+.signInTitle {
+  font-family: var(--font-serif);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+.backLink { font-size: 13px; color: var(--stone); }
+.backLink:hover { color: var(--olive); }
+
+.shell { min-height: 100vh; background: var(--cream); }
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 32px;
+  background: var(--warm-white);
+  border-bottom: 1px solid var(--stone-light);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 600;
+}
+.userBox { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; font-size: 13px; }
+.link { color: var(--olive); font-weight: 600; }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 32px;
+  overflow-x: auto;
+  background: var(--warm-white);
+  border-bottom: 1px solid var(--stone-light);
+}
+.tab {
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font: 600 13px var(--font-sans);
+  color: var(--stone);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--charcoal); }
+.tabActive { color: var(--olive); border-bottom-color: var(--olive); }
+
+.main { max-width: 900px; margin: 0 auto; padding: 36px 32px 80px; }
+
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.panelTitle {
+  font-family: var(--font-serif);
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.muted { color: var(--stone); font-size: 14px; }
+.hint { font-style: normal; font-weight: 400; color: var(--stone); }
+.error {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: var(--radius);
+  background: #fbeaea;
+  color: #8a2323;
+  font-size: 14px;
+}
+
+.list { display: flex; flex-direction: column; gap: 10px; }
+
+.card {
+  background: var(--warm-white);
+  border: 1px solid var(--stone-light);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+}
+
+.row { display: flex; align-items: center; gap: 16px; }
+.rowMain { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; text-align: left; }
+.rowMain .muted { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rowActions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+.iconBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius);
+  border: 1px solid var(--stone-light);
+  background: #fff;
+  cursor: pointer;
+  color: var(--charcoal);
+}
+.iconBtn:disabled { opacity: 0.35; cursor: default; }
+
+.textBtn {
+  background: none;
+  border: none;
+  padding: 6px 8px;
+  font: 600 13px var(--font-sans);
+  color: var(--olive);
+  cursor: pointer;
+}
+.textBtn:hover { text-decoration: underline; }
+.danger { color: #a23b3b; }
+
+.empty {
+  padding: 36px 24px;
+  text-align: center;
+  border: 1.5px dashed var(--stone-light);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.empty .actions { justify-content: center; margin-top: 12px; }
+
+.form { display: flex; flex-direction: column; gap: 16px; }
+.list .form { padding: 4px 0; }
+.card + .form, .panelHead + .form { margin-bottom: 10px; }
+
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+.field input,
+.field select,
+.field textarea,
+.filter {
+  font: 400 15px var(--font-sans);
+  color: var(--charcoal);
+  padding: 10px 12px;
+  border: 1px solid var(--stone-light);
+  border-radius: var(--radius);
+  background: #fff;
+  width: 100%;
+}
+.filter { width: auto; }
+.field textarea { resize: vertical; line-height: 1.5; }
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.filter:focus { outline: 2px solid var(--olive-light); outline-offset: 1px; border-color: transparent; }
+.field input:invalid:not(:placeholder-shown) { border-color: #c25b5b; }
+
+.actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.saveNotes { align-self: flex-start; padding: 8px 16px; }
+
+/* ---------- Leads ---------- */
+.leadHead {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.leadBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--stone-light);
+}
+.meta { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; font-size: 14px; }
+.meta dt { color: var(--stone); }
+.meta a { color: var(--olive); }
+.message {
+  white-space: pre-wrap;
+  padding: 14px 16px;
+  background: var(--cream);
+  border-radius: var(--radius);
+  line-height: 1.6;
+}
+
+.badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--stone-light);
+  color: var(--charcoal);
+}
+.status_new       { background: var(--accent); color: #fff; }
+.status_contacted { background: var(--olive-pale); color: var(--olive); }
+.status_quoted    { background: var(--olive-light); color: #fff; }
+.status_won       { background: var(--olive); color: #fff; }
+.status_lost,
+.status_archived  { background: var(--stone-light); color: var(--stone); }
+
+@media (max-width: 640px) {
+  .topbar, .tabs { padding-left: 16px; padding-right: 16px; }
+  .main { padding: 24px 16px 60px; }
+  .panelHead { flex-direction: column; align-items: stretch; }
+  .row { flex-direction: column; align-items: stretch; }
+  .rowActions { justify-content: flex-end; }
+  .signInCard { padding: 36px 20px; }
+}

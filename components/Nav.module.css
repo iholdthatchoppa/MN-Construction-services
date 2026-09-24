@@ -1,0 +1,113 @@
+/* Floating "bubble" header: transparent full-width layer, pill aligned to the page container */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 200;
+  padding-top: var(--nav-gap);
+  pointer-events: none; /* only the pill itself catches clicks */
+}
+
+.inner {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: var(--nav-pill-h);
+  padding: 0 8px 0 18px;
+  background: rgba(250,248,245,0.82);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid rgba(212,207,198,0.9);
+  border-radius: 999px;
+  box-shadow: 0 6px 24px rgba(28,28,26,0.06);
+  transition: box-shadow 0.3s var(--ease), background 0.3s var(--ease);
+}
+.scrolled .inner {
+  background: rgba(250,248,245,0.94);
+  box-shadow: 0 10px 34px rgba(28,28,26,0.12);
+}
+
+/* Pill-shaped CTA so it sits flush inside the bubble */
+.cta { border-radius: 999px; padding: 13px 24px; font-size: 13.5px; }
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  gap: 1px;
+}
+.wordmarkMain {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--charcoal);
+}
+.wordmarkSub {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+/* Links */
+.links {
+  display: flex;
+  align-items: center;
+  gap: 38px;
+}
+.links a {
+  position: relative;
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--charcoal);
+  transition: color 0.2s;
+}
+.links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0;
+  width: 0; height: 1px;
+  background: var(--olive);
+  transition: width 0.28s var(--ease);
+}
+.links a:hover            { color: var(--olive); }
+.links a:hover::after     { width: 100%; }
+
+/* Right */
+.right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.phone {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--charcoal);
+  transition: color 0.2s;
+}
+.phone svg { color: var(--olive); flex-shrink: 0; }
+.phone:hover { color: var(--olive); }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .links { display: none; }
+}
+@media (max-width: 640px) {
+  .phone span { display: none; }
+  .inner { padding: 0 6px 0 12px; gap: 12px; }
+  .wordmarkSub { display: none; }
+  .cta { padding: 11px 16px; }
+}

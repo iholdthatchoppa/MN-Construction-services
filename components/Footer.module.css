@@ -1,0 +1,93 @@
+.footer {
+  background: var(--charcoal);
+  padding: 64px 0 36px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 44px;
+  margin-bottom: 36px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  gap: 1px;
+}
+.wordmarkMain {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--warm-white);
+}
+.wordmarkSub {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.nav {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.nav a {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--stone);
+  transition: color 0.2s;
+}
+.nav a:hover { color: var(--warm-white); }
+
+.contact { text-align: right; }
+.contact a {
+  display: block;
+  font-size: 13.5px;
+  color: var(--stone);
+  transition: color 0.2s;
+  line-height: 1.9;
+}
+.contact a:hover { color: var(--warm-white); }
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.copy {
+  font-size: 11.5px;
+  color: rgba(160,152,128,0.58);
+}
+.tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--olive-light);
+}
+
+@media (max-width: 1024px) {
+  .top {
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    text-align: center;
+  }
+  .contact { text-align: center; }
+  .bottom  { flex-direction: column; gap: 10px; text-align: center; }
+}
+@media (max-width: 640px) {
+  .nav { justify-content: center; gap: 20px; }
+}

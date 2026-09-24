@@ -1,0 +1,211 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: leads            (contact-form submissions — contain PII, admin-only read)
+// Document ID: auto-generated
+// Fields:
+//   - name: string (required, 1-100)
+//   - email: string (required, valid email, <= 200)
+//   - phone: string (optional, <= 40)
+//   - service: string (optional, <= 60)
+//   - message: string (required, 1-5000)
+//   - status: string (required, one of LEAD_STATUSES; 'new' on create)
+//   - createdAt: timestamp (required, == request.time on create, immutable)
+//   - notes: string (optional, <= 5000, admin-only)
+//   - updatedAt: timestamp (optional, == request.time, admin-only)
+//
+// Collection: services         (public site content)
+// Fields: icon (kitchen|bathroom|repairs), title (1-100), desc (1-1000),
+//         bullets (string, newline-separated, <= 2000), order (int 0-1000)
+//
+// Collection: portfolio        (public site content)
+// Fields: name (1-120), year ('' or 4 digits), imageAlt (1-200),
+//         imageSrc (optional, '', https URL, or /images/... site path; <= 1000),
+//         placeholderColor (optional, <= 200), order (int 0-1000)
+//
+// Collection: trustReasons     (public site content)
+// Fields: icon (shield|clock|dollar|check), title (1-100), desc (1-1000), order (int 0-1000)
+//
+// Collection: settings
+// Document ID: 'site' only
+// Fields: phone (0-40), email (valid email, <= 200), updatedAt (optional, == request.time)
+//
+// Access model:
+//   - Admins are a fixed allow-list of verified Google accounts (keep in sync with lib/admin.ts).
+//     No document can grant admin, so there is no self-escalation path.
+//   - Site content is publicly readable (it is rendered on the public website) and admin-writable.
+//   - Anyone may create a lead via the contact form; only admins may read/update/delete leads.
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        request.auth.token.email_verified == true &&
+        request.auth.token.email in ['abtin.norizadeh@gmail.com'];
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return incoming().keys().hasOnly(fields);
+    }
+
+    function hasRequiredFields(fields) {
+      return incoming().keys().hasAll(fields);
+    }
+
+    function validString(value, minLen, maxLen) {
+      return value is string && value.size() >= minLen && value.size() <= maxLen;
+    }
+
+    function validOptionalString(field, minLen, maxLen) {
+      return !(field in incoming()) || validString(incoming()[field], minLen, maxLen);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.size() <= 200 &&
+        email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$');
+    }
+
+    function isValidOrder(value) {
+      return value is int && value >= 0 && value <= 1000;
+    }
+
+    function areImmutableFieldsUnchanged(fields) {
+      return !incoming().diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators (used on both create and update)
+    // ===============================================================
+
+    function leadStatuses() {
+      return ['new', 'contacted', 'quoted', 'won', 'lost', 'archived'];
+    }
+
+    function isValidLead(data) {
+      return hasOnlyAllowedFields(['name', 'email', 'phone', 'service', 'message', 'status', 'createdAt', 'notes', 'updatedAt']) &&
+        hasRequiredFields(['name', 'email', 'message', 'status', 'createdAt']) &&
+        validString(data.name, 1, 100) &&
+        isValidEmail(data.email) &&
+        validOptionalString('phone', 1, 40) &&
+        validOptionalString('service', 1, 60) &&
+        validString(data.message, 1, 5000) &&
+        data.status in leadStatuses() &&
+        data.createdAt is timestamp &&
+        validOptionalString('notes', 0, 5000) &&
+        (!('updatedAt' in data) || data.updatedAt == request.time);
+    }
+
+    // Public contact-form submission: only the visitor-supplied fields, always starts as 'new'.
+    function isValidNewLead(data) {
+      return isValidLead(data) &&
+        !('notes' in data) && !('updatedAt' in data) &&
+        data.status == 'new' &&
+        data.createdAt == request.time;
+    }
+
+    // Admin triage: only status / notes / updatedAt may change; submission content is immutable.
+    function isValidLeadUpdate(data) {
+      return isValidLead(data) &&
+        incoming().diff(resource.data).affectedKeys().hasOnly(['status', 'notes', 'updatedAt']) &&
+        data.updatedAt == request.time;
+    }
+
+    function isValidService(data) {
+      return hasOnlyAllowedFields(['icon', 'title', 'desc', 'bullets', 'order']) &&
+        hasRequiredFields(['icon', 'title', 'desc', 'bullets', 'order']) &&
+        data.icon in ['kitchen', 'bathroom', 'repairs'] &&
+        validString(data.title, 1, 100) &&
+        validString(data.desc, 1, 1000) &&
+        validString(data.bullets, 0, 2000) &&
+        isValidOrder(data.order);
+    }
+
+    function isValidPortfolioItem(data) {
+      return hasOnlyAllowedFields(['name', 'year', 'imageSrc', 'imageAlt', 'placeholderColor', 'order']) &&
+        hasRequiredFields(['name', 'year', 'imageAlt', 'order']) &&
+        validString(data.name, 1, 120) &&
+        data.year is string && data.year.matches('^([0-9]{4})?$') &&
+        validString(data.imageAlt, 1, 200) &&
+        (!('imageSrc' in data) || data.imageSrc == '' ||
+          (validString(data.imageSrc, 9, 1000) &&
+            (data.imageSrc.matches('^https://.*') || data.imageSrc.matches('^/images/[A-Za-z0-9._/-]+$')))) &&
+        validOptionalString('placeholderColor', 0, 200) &&
+        isValidOrder(data.order);
+    }
+
+    function isValidTrustReason(data) {
+      return hasOnlyAllowedFields(['icon', 'title', 'desc', 'order']) &&
+        hasRequiredFields(['icon', 'title', 'desc', 'order']) &&
+        data.icon in ['shield', 'clock', 'dollar', 'check'] &&
+        validString(data.title, 1, 100) &&
+        validString(data.desc, 1, 1000) &&
+        isValidOrder(data.order);
+    }
+
+    function isValidSettings(data) {
+      return hasOnlyAllowedFields(['phone', 'email', 'updatedAt']) &&
+        hasRequiredFields(['phone', 'email']) &&
+        validString(data.phone, 0, 40) &&
+        isValidEmail(data.email) &&
+        (!('updatedAt' in data) || data.updatedAt == request.time);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /leads/{leadId} {
+      allow create: if isValidNewLead(incoming());
+      allow read: if isAdmin();
+      allow update: if isAdmin() && isValidLeadUpdate(incoming()) &&
+        areImmutableFieldsUnchanged(['name', 'email', 'phone', 'service', 'message', 'createdAt']);
+      allow delete: if isAdmin();
+    }
+
+    // Public website content: readable by everyone (explicit requirement — it is the public site),
+    // writable only by admins with a valid shape.
+    match /services/{id} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidService(incoming());
+      allow delete: if isAdmin();
+    }
+
+    match /portfolio/{id} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidPortfolioItem(incoming());
+      allow delete: if isAdmin();
+    }
+
+    match /trustReasons/{id} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidTrustReason(incoming());
+      allow delete: if isAdmin();
+    }
+
+    match /settings/{docId} {
+      allow read: if docId == 'site';
+      allow create, update: if isAdmin() && docId == 'site' && isValidSettings(incoming());
+      allow delete: if false;
+    }
+
+    // Everything else is denied by default.
+  }
+}
