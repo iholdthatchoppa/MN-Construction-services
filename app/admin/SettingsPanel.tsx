@@ -54,10 +54,10 @@ export default function SettingsPanel() {
       <form className={`${styles.form} ${styles.card}`} onSubmit={handleSubmit} onChange={() => setState('idle')}>
         <label className={styles.field}>
           <span>Phone number</span>
-          <input name="phone" type="tel" defaultValue={values.phone} maxLength={40} placeholder="(612) 555-0100" />
+          <input name="phone" type="tel" defaultValue={values.phone} maxLength={40} placeholder="(206) 555-0100" />
         </label>
         <label className={styles.field}>
-          <span>Email address <em className={styles.hint}>— shown on the site; quote-request emails still go to {EMAIL}</em></span>
+          <span>Email address <em className={styles.hint}>— shown on the site</em></span>
           <input name="email" type="email" defaultValue={values.email} maxLength={200} required />
         </label>
         <div className={styles.actions}>

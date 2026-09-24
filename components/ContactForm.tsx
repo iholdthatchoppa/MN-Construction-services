@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { COLLECTIONS } from '@/lib/content';
 import styles from './ContactForm.module.css';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
@@ -23,26 +26,41 @@ export default function ContactForm() {
     setErrorMsg('');
 
     const fd = new FormData(e.currentTarget);
-    const body = {
-      name:    fd.get('name')    as string,
-      phone:   fd.get('phone')   as string,
-      email:   fd.get('email')   as string,
-      service: fd.get('service') as string,
-      message: fd.get('message') as string,
-    };
+    const field = (k: string) => String(fd.get(k) ?? '').trim();
+    const name = field('name');
+    const phone = field('phone');
+    const email = field('email');
+    const service = field('service');
+    const message = field('message');
+
+    // Same limits as isValidNewLead() in firestore.rules
+    const error =
+      !name ? 'Please enter your name.' :
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) ? 'Please enter a valid email address.' :
+      !message ? 'Please tell us about your project.' :
+      name.length > 100 || email.length > 200 || phone.length > 40 || message.length > 5000 ? 'One of the fields is too long.' :
+      '';
+    if (error) {
+      setState('error');
+      setErrorMsg(error);
+      return;
+    }
 
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+      await addDoc(collection(db, COLLECTIONS.leads), {
+        name,
+        email,
+        ...(phone && { phone }),
+        ...(service && { service }),
+        message,
+        status: 'new',
+        createdAt: serverTimestamp(),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Something went wrong.');
       setState('success');
     } catch (err) {
+      console.error('[contact] Failed to save request:', err);
       setState('error');
-      setErrorMsg(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setErrorMsg('Something went wrong. Please try again, or give us a call.');
     }
   }
 

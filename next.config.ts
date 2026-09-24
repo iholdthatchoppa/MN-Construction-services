@@ -4,9 +4,11 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // Built as static files and served from Firebase Hosting (Spark plan, no server).
+  output: 'export',
   images: {
-    // 90 is used for the full-screen hero background so it stays crisp.
-    qualities: [75, 90],
+    // No image server in a static export; photos are served as-is.
+    unoptimized: true,
   },
 };
 

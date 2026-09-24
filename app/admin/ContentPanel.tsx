@@ -101,7 +101,7 @@ export default function ContentPanel({ section }: { section: Section }) {
       <div className={styles.panelHead}>
         <div>
           <h2 className={styles.panelTitle}>{section.label}</h2>
-          <p className={styles.muted}>Changes appear on the website within about a minute.</p>
+          <p className={styles.muted}>Changes show on the website as soon as visitors load the page.</p>
         </div>
         {items.length > 0 && editing !== 'new' && (
           <button className="btn btnPrimary" onClick={() => setEditing('new')} disabled={busy}>Add</button>
